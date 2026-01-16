@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جلسة التدريب</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='training.css') }}">
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+        <img class="progress-star" id="progressStar" src="{{ url_for('static', filename='star.png') }}" alt="progress">
+    </div>
+    
+    <div class="training-container">
+        <div class="training-header">
+            <button class="back-btn" onclick="goBackToSession()">← رجوع</button>
+        </div>
+        
+        <div class="training-content">
+            <div id="listeningPhase">
+                <div class="image-container" id="imageContainer" style="display: none;">
+                    <img id="itemImage" src="" alt="الصورة">
+                </div>
+                
+                <div class="status-text" id="statusText"></div>
+            </div>
+            
+            <div id="visualPhase" style="display: none;">
+                <h1 class="visual-title">اختر الصورة الصحيحة</h1>
+                <div class="images-grid">
+                    <div id="image-0" class="image-option" onclick="selectImage(0)">
+                        <img id="img-0" src="" alt="خيار 1">
+                    </div>
+                    <div id="image-1" class="image-option" onclick="selectImage(1)">
+                        <img id="img-1" src="" alt="خيار 2">
+                    </div>
+                    <div id="image-2" class="image-option" onclick="selectImage(2)">
+                        <img id="img-2" src="" alt="خيار 3">
+                    </div>
+                </div>
+                <div id="feedbackText" class="feedback-text"></div>
+            </div>
+            
+            <div id="wheelGame" style="display: none;">
+                <div class="wheel-game-container">
+                    <div class="wheel-images" id="wheelImages"></div>
+                </div>
+            </div>
+            
+            <div id="speechPhase" style="display: none;">
+                <h1 class="speech-title">قل ما تراه في الصورة</h1>
+                <div class="speech-container">
+                    <div class="image-container speech-image" id="speechImageContainer">
+                        <img id="speechImage" src="" alt="الصورة">
+                    </div>
+                    <div id="speechStatus" class="speech-status">استمع واستعد للتحدث</div>
+                    <div class="mic-indicator" id="micIndicator" style="display: none;">
+                        <div class="mic-pulse"></div>
+                        <span>جاري التسجيل...</span>
+                    </div>
+                    <div id="speechFeedback" class="speech-feedback"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='training.js') }}"></script>
+</body>
+</html>

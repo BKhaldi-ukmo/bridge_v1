@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جسر اللغة</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div id="app">
+        <!-- Splash Screen -->
+        <div id="splashScreen" class="screen active">
+            <div class="splash-container">
+                <div class="logo-container">
+                    <img src="{{ url_for('static', filename='logo.png') }}" alt="جسر اللغة">
+                </div>
+                <div class="text-container">
+                    <p class="splash-text">جسر اللغة لأطفال طيف التوحد</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selection Screen -->
+        <div id="selectionScreen" class="screen">
+            <div class="selection-container">
+                <div class="selection-content">
+                    <h1 class="welcome-text">أهلا بك في جسر اللغة... إبد بتدريب طفلك</h1>
+                    <div class="buttons-container">
+                        <button class="selection-btn" onclick="handleSelection('specialist')">أنا مختص</button>
+                        <button class="selection-btn" onclick="handleSelection('parent')">أنا ولي</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parent Login Screen -->
+        <div id="parentLoginScreen" class="screen">
+            <div class="auth-container">
+                <div class="auth-header">أنا ولي</div>
+                <div class="auth-content">
+                    <form onsubmit="handleParentLogin(event)" id="parentLoginForm">
+                        <input type="text" class="auth-input" placeholder="اسم المستخدم" required>
+                        <input type="password" class="auth-input" placeholder="كلمة السر" required>
+                        <button type="submit" class="auth-btn">دخول</button>
+                    </form>
+                    <div id="parentLoginMsg" class="message"></div>
+                    <button class="create-account-link" onclick="showParentReg()">ليس لديك حساب؟ أنشئ واحد</button>
+                    <button class="back-link" onclick="goBack()">العودة</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parent Registration Screen -->
+        <div id="parentRegScreen" class="screen">
+            <div class="auth-container">
+                <div class="auth-header">إنشاء حساب - ولي أمر</div>
+                <div class="auth-content">
+                    <form onsubmit="handleParentReg(event)" id="parentRegForm">
+                        <input type="text" class="auth-input" placeholder="اسم المستخدم" required>
+                        <input type="password" class="auth-input" placeholder="كلمة السر" required>
+                        <input type="tel" class="auth-input" placeholder="الهاتف" required>
+                        <button type="submit" class="auth-btn">إنشاء حساب</button>
+                    </form>
+                    <div id="parentRegMsg" class="message"></div>
+                    <button class="create-account-link" onclick="showParentLogin()">هل لديك حساب؟ سجل دخول</button>
+                    <button class="back-link" onclick="goBack()">العودة</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Specialist Login Screen -->
+        <div id="specialistLoginScreen" class="screen">
+            <div class="auth-container">
+                <div class="auth-header">أنا المختص</div>
+                <div class="auth-content">
+                    <form onsubmit="handleSpecialistLogin(event)" id="specialistLoginForm">
+                        <input type="email" class="auth-input" placeholder="البريد الالكتروني" required>
+                        <input type="password" class="auth-input" placeholder="كلمة السر" required>
+                        <button type="submit" class="auth-btn">دخول</button>
+                    </form>
+                    <div id="specialistLoginMsg" class="message"></div>
+                    <button class="create-account-link" onclick="showSpecialistReg()">ليس لديك حساب؟ أنشئ واحد</button>
+                    <button class="back-link" onclick="goBack()">العودة</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Specialist Registration Screen -->
+        <div id="specialistRegScreen" class="screen">
+            <div class="auth-container">
+                <div class="auth-header">إنشاء حساب - مختص</div>
+                <div class="auth-content">
+                    <form onsubmit="handleSpecialistReg(event)" id="specialistRegForm">
+                        <input type="text" class="auth-input" placeholder="الاسم الكامل" required>
+                        <input type="email" class="auth-input" placeholder="البريد الالكتروني" required>
+                        <input type="password" class="auth-input" placeholder="كلمة السر" required>
+                        <input type="tel" class="auth-input" placeholder="الهاتف" required>
+                        <input type="text" class="auth-input" placeholder="اسم العيادة" required>
+                        <button type="submit" class="auth-btn">إنشاء حساب</button>
+                    </form>
+                    <div id="specialistRegMsg" class="message"></div>
+                    <button class="create-account-link" onclick="showSpecialistLogin()">هل لديك حساب؟ سجل دخول</button>
+                    <button class="back-link" onclick="goBack()">العودة</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parent Dashboard Screen -->
+        <div id="parentDashboardScreen" class="screen">
+            <div class="dashboard-container">
+                <div class="dashboard-header">
+                    <h1>أهلا بك يا ولي أمر</h1>
+                    <button class="logout-btn" onclick="handleLogout()">تسجيل خروج</button>
+                </div>
+                <div class="dashboard-content">
+                    <div class="welcome-card">
+                        <h2>مرحبا <span id="parentName"></span></h2>
+                        <p>رقم الهاتف: <strong id="parentPhone"></strong></p>
+                    </div>
+                    <div class="dashboard-section">
+                        <h3>أطفالك</h3>
+                        <button class="add-child-btn" onclick="showAddChildModal()">+ إضافة طفل جديد</button>
+                        <div id="parentChildrenList"></div>
+                    </div>
+                    <div class="dashboard-section">
+                        <h3>الخيارات المتاحة</h3>
+                        <div class="options-grid">
+                            <div class="option-card" onclick="showStartSessionModal()">
+                                <h4>بدء جلسة تدريب جديدة</h4>
+                                <p>ابدأ جلسة تدريب لطفلك الآن</p>
+                            </div>
+                            <div class="option-card">
+                                <h4>متابعة التقدم</h4>
+                                <p>تابع تقدم طفلك في الجلسات</p>
+                            </div>
+                            <div class="option-card">
+                                <h4>الجلسات المقررة</h4>
+                                <p>اعرض الجلسات القادمة</p>
+                            </div>
+                            <div class="option-card">
+                                <h4>التقارير</h4>
+                                <p>اطلع على التقارير الدورية</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-section">
+                        <h3>الجلسات الأخيرة</h3>
+                        <div id="parentSessionsList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Specialist Dashboard Screen -->
+        <!-- Active Session Screen -->
+        <div id="sessionScreen" class="screen">
+            <div class="session-container">
+                <div class="session-header">
+                    <button class="back-link" onclick="endSession()">← العودة</button>
+                    <button class="logout-btn" onclick="handleLogout()">تسجيل خروج</button>
+                </div>
+                <div class="session-content">
+                    <div class="session-welcome">
+                        <h1>أهلا بك في الجلسة</h1>
+                        <p class="session-subtitle">اليوم سنتعلم:</p>
+                        <div class="session-topic">
+                            <h2 id="sessionTopicText"></h2>
+                        </div>
+                    </div>
+                    <div class="session-details">
+                        <div class="detail-item" id="itemDetailDiv" style="display:none;">
+                            <span class="detail-label">البند:</span>
+                            <span class="detail-value" id="itemDetailValue"></span>
+                        </div>
+                        <div class="detail-item" id="tertiaryDetailDiv" style="display:none;">
+                            <span class="detail-label">التفاصيل:</span>
+                            <span class="detail-value" id="tertiaryDetailValue"></span>
+                        </div>
+                    </div>
+                    <button class="session-start-btn" onclick="startTraining()">ابدأ التدريب</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="specialistDashboardScreen" class="screen">
+            <div class="dashboard-container">
+                <div class="dashboard-header">
+                    <h1>أهلا بك يا مختص</h1>
+                    <button class="logout-btn" onclick="handleLogout()">تسجيل خروج</button>
+                </div>
+                <div class="dashboard-content">
+                    <div class="welcome-card">
+                        <h2>مرحبا <span id="specialistName"></span></h2>
+                        <p>العيادة: <strong id="clinicName"></strong></p>
+                        <p>البريد الإلكتروني: <strong id="specialistEmail"></strong></p>
+                        <p>الهاتف: <strong id="specialistPhone"></strong></p>
+                    </div>
+                    <div class="dashboard-section">
+                        <h3>الخيارات المتاحة</h3>
+                        <div class="options-grid">
+                            <div class="option-card">
+                                <h4>إدارة الجلسات</h4>
+                                <p>أنشئ وأدر جلسات التدريب</p>
+                            </div>
+                            <div class="option-card">
+                                <h4>الأطفال</h4>
+                                <p>اعرض قائمة الأطفال</p>
+                            </div>
+                            <div class="option-card">
+                                <h4>التقارير</h4>
+                                <p>أنشئ ومراجعة التقارير</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Start Training Session Modal -->
+        <div id="startSessionModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>بدء جلسة تدريب جديدة</h2>
+                    <button class="close-modal" onclick="closeStartSessionModal()">&times;</button>
+                </div>
+                <form onsubmit="handleStartSession(event)" id="startSessionForm">
+                    <!-- Dimension Dropdown -->
+                    <div class="form-group">
+                        <select id="dimensionSelect" class="session-input session-dropdown" onchange="handleDimensionChange()" required>
+                            <option value="">البعد</option>
+                            <option value="المجموعات الضمنية">المجموعات الضمنية</option>
+                            <option value="اللغة الاستقبالية">اللغة الاستقبالية</option>
+                            <option value="اللغة التعبيرية">اللغة التعبيرية</option>
+                        </select>
+                    </div>
+
+                    <!-- Item Dropdown (shows when dimension is selected) -->
+                    <div class="form-group" id="itemGroup" style="display: none;">
+                        <select id="itemSelect" class="session-input session-dropdown" onchange="handleItemChange()">
+                            <option value="">البند</option>
+                        </select>
+                    </div>
+
+                    <!-- Tertiary Dropdown (conditional based on item) -->
+                    <div class="form-group" id="tertiaryGroup" style="display: none;">
+                        <select id="tertiarySelect" class="session-input session-dropdown">
+                            <option value="">التفاصيل</option>
+                        </select>
+                    </div>
+
+                    <div id="sessionMsg" class="message"></div>
+                    <div class="form-actions">
+                        <button type="submit" class="modal-btn submit-btn">بدء الجلسة</button>
+                        <button type="button" class="modal-btn cancel-btn" onclick="closeStartSessionModal()">إلغاء</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Child Modal -->
+        <div id="addChildModal" class="modal">
+            <div class="modal-content profile-modal">
+                <div class="modal-header">
+                    <h2>إضافة طفل جديد</h2>
+                    <button class="close-modal" onclick="closeAddChildModal()">&times;</button>
+                </div>
+                <form onsubmit="handleAddChild(event)" id="addChildForm">
+                    <!-- Hidden File Input -->
+                    <input type="file" id="childPhotoInput" accept="image/*" style="display: none;">
+                    
+                    <!-- Avatar Section -->
+                    <div class="avatar-section">
+                        <div class="avatar-placeholder" onclick="document.getElementById('childPhotoInput').click();">
+                            <img id="avatarPreview" class="avatar-image" style="display: none;">
+                            <svg id="avatarIcon" class="avatar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"></path>
+                            </svg>
+                            <div class="add-photo-badge">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Child Information Fields -->
+                    <div class="form-group">
+                        <input type="text" id="childName" class="profile-input" placeholder="اسم الطفل" required>
+                    </div>
+
+                    <div class="form-group">
+                        <select id="genderSelect" class="profile-input profile-dropdown" required>
+                            <option value="">جنسه</option>
+                            <option value="ذكر">ذكر</option>
+                            <option value="أنثى">أنثى</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <select id="iqLevelSelect" class="profile-input profile-dropdown" required>
+                            <option value="">درجة الذكاء</option>
+                            <option value="منخفضة جداً">منخفضة جداً</option>
+                            <option value="منخفضة">منخفضة</option>
+                            <option value="متوسطة">متوسطة</option>
+                            <option value="عالية">عالية</option>
+                            <option value="عالية جداً">عالية جداً</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="date" id="dateOfBirthInput" class="profile-input" placeholder="تاريخ ميلاده" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="date" id="startDateInput" class="profile-input" placeholder="تاريخ البدأ" required>
+                    </div>
+
+                    <div class="form-group">
+                        <select id="specialistSelect" class="profile-input profile-dropdown" required>
+                            <option value="">اختر المختص</option>
+                        </select>
+                    </div>
+
+                    <div id="addChildMsg" class="message"></div>
+                    <div class="form-actions">
+                        <button type="submit" class="modal-btn submit-btn">إضافة الطفل</button>
+                        <button type="button" class="modal-btn cancel-btn" onclick="closeAddChildModal()">إلغاء</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

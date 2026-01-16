@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جسر اللغة - اختر دورك</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="selection-container">
+        <div class="selection-content">
+            <h1 class="welcome-text">أهلا بك في جسر اللغة... إبد بتدريب طفلك</h1>
+            <div class="buttons-container">
+                <button class="selection-btn" onclick="handleSelection('specialist')">أنا مختص</button>
+                <button class="selection-btn" onclick="handleSelection('parent')">أنا ولي</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleSelection(type) {
+            console.log('User selected:', type);
+            if (type === 'specialist') {
+                window.location.href = 'specialist.html';
+            } else if (type === 'parent') {
+                window.location.href = 'parent.html';
+            }
+        }
+    </script>
+</body>
+</html>

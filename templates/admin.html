@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - جسر اللغة</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>لوحة التحكم - إدارة أولياء الأمور</h1>
+            <a href="/bridge" class="back-btn">العودة للتطبيق</a>
+        </div>
+
+        <div class="admin-content">
+            <!-- Add Parent Section -->
+            <section class="admin-section">
+                <h2>إضافة ولي أمر جديد</h2>
+                <form id="addParentForm" onsubmit="handleAddParent(event)">
+                    <div class="form-row">
+                        <input type="text" id="parentUsername" placeholder="اسم المستخدم" required>
+                        <input type="password" id="parentPassword" placeholder="كلمة السر" required>
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="parentChildName" placeholder="اسم الطفل" required>
+                        <input type="tel" id="parentPhone" placeholder="رقم الهاتف" required>
+                    </div>
+                    <button type="submit" class="admin-btn">إضافة ولي أمر</button>
+                </form>
+                <div id="addParentMessage" class="message"></div>
+            </section>
+
+            <!-- Parents List Section -->
+            <section class="admin-section">
+                <h2>قائمة أولياء الأمور</h2>
+                <div id="parentsList" class="parents-list">
+                    <p class="loading">جاري التحميل...</p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // Load parents on page load
+        document.addEventListener('DOMContentLoaded', loadParents);
+
+        function loadParents() {
+            fetch('/api/parents')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        displayParents(data.parents);
+                    }
+                })
+                .catch(error => console.error('Error loading parents:', error));
+        }
+
+        function displayParents(parents) {
+            const parentsList = document.getElementById('parentsList');
+            
+            if (parents.length === 0) {
+                parentsList.innerHTML = '<p class="no-data">لا توجد أولياء أمور مضافين</p>';
+                return;
+            }
+
+            parentsList.innerHTML = parents.map(parent => `
+                <div class="parent-card">
+                    <div class="parent-info">
+                        <h3>${parent.username}</h3>
+                        <p><strong>اسم الطفل:</strong> ${parent.child_name}</p>
+                        <p><strong>الهاتف:</strong> ${parent.phone}</p>
+                        <p><strong>تاريخ الإنشاء:</strong> ${new Date(parent.created_at).toLocaleDateString('ar-SA')}</p>
+                    </div>
+                    <div class="parent-actions">
+                        <button class="delete-btn" onclick="deleteParent(${parent.id})">حذف</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleAddParent(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('parentUsername').value;
+            const password = document.getElementById('parentPassword').value;
+            const childName = document.getElementById('parentChildName').value;
+            const phone = document.getElementById('parentPhone').value;
+
+            const messageEl = document.getElementById('addParentMessage');
+            messageEl.textContent = '';
+
+            fetch('/api/parent/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    password,
+                    child_name: childName,
+                    phone
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    messageEl.textContent = 'تم إضافة ولي الأمر بنجاح';
+                    messageEl.className = 'message success';
+                    document.getElementById('addParentForm').reset();
+                    setTimeout(loadParents, 1000);
+                } else {
+                    messageEl.textContent = data.message || 'حدث خطأ';
+                    messageEl.className = 'message error';
+                }
+            })
+            .catch(error => {
+                messageEl.textContent = 'حدث خطأ في الاتصال بالخادم';
+                messageEl.className = 'message error';
+                console.error('Error:', error);
+            });
+        }
+
+        function deleteParent(parentId) {
+            if (!confirm('هل أنت متأكد من حذف هذا ولي الأمر؟')) {
+                return;
+            }
+
+            fetch(`/api/parent/${parentId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    loadParents();
+                } else {
+                    alert(data.message || 'حدث خطأ');
+                }
+            })
+            .catch(error => {
+                alert('حدث خطأ في الاتصال بالخادم');
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
